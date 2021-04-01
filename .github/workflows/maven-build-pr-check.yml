@@ -46,10 +46,8 @@ jobs:
         arch: s390x
         distro: ubuntu20.04
         run: | 
-         apt-get update && apt-get install ca-certificates-java
-         apt-get install -y openjdk-11-jdk
+         apt-get update && apt-get DEBIAN_FRONTEND=noninteractive install ca-certificates-java openjdk-11-jdk wget curl  
          java -version
-         apt-get install -y wget curl  
          wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.3/apache-maven-3.6.3-bin.tar.gz 
          tar -xzf apache-maven-3.6.3-bin.tar.gz  
          export PATH=`pwd`/apache-maven-3.6.3/bin/:$PATH 
