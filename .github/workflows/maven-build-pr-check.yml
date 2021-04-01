@@ -41,7 +41,7 @@ jobs:
       #run: |
         #sudo docker run --rm --privileged linuxkit/binfmt:4ea3b9b0938cbd19834c096aa31ff475cc75d281
     - name: Run build 
-      uses: uraimo/run-on-arch-action@v2.0.9
+      uses: Prabhav-Thali/run-on-arch-action@v3.0
       with:
         arch: s390x
         distro: ubuntu20.04
