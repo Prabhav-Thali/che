@@ -17,7 +17,7 @@ END
 #rm archive/*
 #ant jar && ant archive-platform-jar
 
-apt-get update -y && apt-get install -y ca-certificates-java openjdk-11-jdk wget curl  
+apt-get update -y && apt-get install -y openjdk-11-jdk wget curl  
 java -version
 wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.3/apache-maven-3.6.3-bin.tar.gz 
 tar -xzf apache-maven-3.6.3-bin.tar.gz  
