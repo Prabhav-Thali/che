@@ -35,22 +35,30 @@ jobs:
 
   build-on-z:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        arch:
+          - amd64
+          - s390x
     steps:
-    - uses: actions/checkout@v2
-    #- name: Enable running multiple architectures
-      #run: |
-        #sudo docker run --rm --privileged linuxkit/binfmt:4ea3b9b0938cbd19834c096aa31ff475cc75d281
-    - name: Run build 
-      uses: Prabhav-Thali/run-on-arch-action@v3.2
-      with:
-        arch: s390x
-        distro: ubuntu20.04
-        run: | 
-         apt-get update -y && apt-get install -y ca-certificates-java openjdk-11-jdk wget curl  
-         java -version
-         wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.6.3/apache-maven-3.6.3-bin.tar.gz 
-         tar -xzf apache-maven-3.6.3-bin.tar.gz  
-         export PATH=`pwd`/apache-maven-3.6.3/bin/:$PATH 
-         mvn -v
-         echo "done mvn -v"
-         mvn -B clean install -U -Pintegration	
+      - uses: actions/checkout@v2
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven- 
+      - name: Update System
+        run: sudo apt-get update -y
+      - name: Install qemu
+        run: sudo apt-get install -y --no-install-recommends qemu-user-static
+      - name: Experimental Docker
+        run: sudo cp .github/experimental-docker.json /etc/docker/daemon.json
+      - name: Restart Docker
+        run: sudo systemctl restart docker.service
+      - name: Pull docker image
+        run: docker pull --platform $(echo ${{ matrix.arch }} | sed 's|-|/|g') debian:10 || true
+      - name: Build inside Docker
+        run: docker run --rm -v $GITHUB_WORKSPACE:/work debian:10 /work/.github/build-native-debian.sh
+      
